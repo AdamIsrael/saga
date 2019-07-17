@@ -2,9 +2,14 @@ import argparse
 import importlib
 import os
 import os.path
-import saga
-from saga.workspace import Workspace
-from saga.templates import templates
+# import saga
+import saga.compile
+import saga.templates
+import saga.utils
+import saga.workspace
+# from saga.compile import Compile
+# from saga.workspace import Workspace
+# from saga.templates import templates
 from shutil import copytree
 
 
@@ -24,7 +29,7 @@ def get_argparser():
     # TODO: Integrate with templates
     new_p.add_argument(
         'type', 
-        choices=templates, 
+        choices=saga.utils.templates, 
         help='The type of project to create'
     )
     new_p.add_argument('name', help='The name of the project to create')
@@ -47,16 +52,21 @@ def args_compile(args):
     print("compile called")
     print(args)
 
-    if saga.find_saga_config():
+    here = saga.find_saga_config()
+    if here:
         print("We're in a project folder")
-    # # We need to be inside a project folder
-    # here = os.getcwd()
-    # saga = os.path.dirname(os.path.dirname(here))
-    
-    # if os.path.exists('{}/saga.yaml'.format(saga)):
-    #     print("We're in a project folder")
-    # else:
-    #     print("No saga found")
+
+        compiler = saga.compile.Compiler(
+            # Tell the compiler where saga is
+            saga=here,
+        )
+        # Look for a project-specific config
+
+        # Map in the saga defaults
+
+        if args.target == 'draft':
+            print("Compiling a draft...")
+            compiler.CompileDraft()
 
 def args_init(args):
     workspace = Workspace()

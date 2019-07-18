@@ -1,14 +1,17 @@
 # saga
 
+Saga is a document management system for writing.
+
+The goal is to write in Markdown and use saga to generate a variety of document formats adhering to the [Standard Manuscript Format](https://www.shunn.net/format/story.html).
+
 
 ## Formats
-- doc
-- pdf
-- rtf
-- html
+
+The input format is always Markdown. Saga uses _pandoc_ to transform this into **RTF**, which can then be converted to a variety of formats, such as docx, pdf, epub, and html.
 
 ## Targets
 
+The `saga` command has a number of targets:
 - new [novel, short, script, etc]
 - compile [draft, outline, research]
 - wc (word count)
@@ -24,7 +27,7 @@ saga compile draft
 
 ### Templates
 
-Templates must create the same folders:
+Templates allow the customization of a type of writing, but must follow the same folder structure:
 - Draft
 - Outline
 - Research
@@ -55,4 +58,4 @@ A scene break will automatically be inserted between scenes.
 
 Compile the manuscript(s) into a single document and produce a variety of formats
 
-Writes to `~/drafts/<type>/<name>/` i.e., `~/drafts/stories/foo`
+TBD: Write to `~drafts/<project type>/<short-title>` or `~/<type>/<short-title>/Output?`.

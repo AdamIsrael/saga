@@ -2,6 +2,7 @@ import os
 import os.path
 import pypandoc
 from pandocfilters import walk, toJSONFilter
+import saga.language
 import saga.utils
 import tempfile
 
@@ -38,97 +39,86 @@ class Compiler():
 
         # Get a list of all the individual parts
         files = self.getFiles(draft)
-        print(files)
+        # print(files)
 
         # Open temporary file to store unified Markdown
+        buffer = []
+
+        last = len(files) - 1
+        for i, file in enumerate(files):
+            # Slurp the file
+            with open(file, 'r') as f:
+                buffer += f.readlines()
+
+            # Preprocessor
+
+            # Put a line after each scene
+            if i != last:
+                buffer.append('')
+                buffer.append("***")
+                buffer.append('')
+
         with tempfile.NamedTemporaryFile(delete=False, suffix='.md') as fp:
-
-            # Add header content
-            
-            last = len(files) - 1
-            buffer = ""
-            for i, file in enumerate(files):
-                
-
-                # Open file
-                with open(file, 'r') as f:
-                    # Read file
-                    lines = f.readlines()
-
-                    buffer += "".join(lines)
-                    # buffer = f.readlines()
-
-                    f.seek(0)
-
-                # Preprocessor
-
-                # Put a line after each scene
-                if i != last:
-                    # buffer.append('')
-                    # buffer.append("***")
-                    # buffer.append('')
-
-                    buffer += "\n***\n"
-
-                # Write to temporary file
-                # fp.write("\n".join(buffer).encode('utf-8'))
-                fp.write(buffer.encode('utf-8'))
-
-            # fp.seek(0)
-            # print(fp.readlines())
-
+            # Write to temporary file
+            fp.write("\n".join(buffer).encode('utf-8'))
             fp.close()
-            print(fp.name)
 
-            # Is there a metadata.yaml?
-            # print(metadata)
-            # For each format defined in the yaml config
-            rtf = pypandoc.convert_file(
-                fp.name,
-                'rtf',
-                format='md',
-                extra_args=[
-                    # 'metadata.yaml', 
-                    '--data-dir={}/.pandoc/'.format(saga.find_saga_lib()),
-                    '--template=template.rtf',
-                    # Pass metadata variables here
-                    '-V', 'title:{}'.format(metadata['title']),
-                    '-V', 'running-title:{}'.format(metadata['running-title']),
-                    '-V', 'author:Adam Israel',
-                    '-V', 'email:adam@adamisrael.com',
-                    '-V', 'surname:Israel',
-                    '-V', 'fullname:Adam Israel',
-                    '-V', 'address1:17 Vanier Dr.',
-                    '-V', 'address2:P.O. Box 1946',
-                    '-V', 'city:Tilbury',
-                    '-V', 'state:ON',
-                    '-V', 'zipcode:N0P 2L0',
-                    '-V', 'country:Canada',
-                    '-V', 'phone:(226) 229-1337',
-                    '-V', 'wordcount:{}'.format(saga.utils.wordcount(buffer)),
-                ],
-                filters=[
-                    # os.path.join(self.saga, 'saga/filters', 'hr_to_scene_break.py'),
-                ]
-            )
+        w = saga.language.Words(buffer)
+        wordcount = w.getWordCount()
 
-            # Post-processing
-            print("Post-processing...")
+        # First convert to RTF
+        rtf = pypandoc.convert_file(
+            fp.name,
+            'rtf',
+            format='md',
+            extra_args=[
+                '--data-dir={}/.pandoc/'.format(saga.find_saga_lib()),
+                '--template=template.rtf',
+                # Pass metadata variables here
+                '-V', 'title:{}'.format(metadata['title']),
+                '-V', 'running-title:{}'.format(metadata['running-title']),
+                '-V', 'author:Adam Israel',
+                '-V', 'email:adam@adamisrael.com',
+                '-V', 'surname:Israel',
+                '-V', 'fullname:Adam Israel',
+                '-V', 'address1:17 Vanier Dr.',
+                '-V', 'address2:P.O. Box 1946',
+                '-V', 'city:Tilbury',
+                '-V', 'state:ON',
+                '-V', 'zipcode:N0P 2L0',
+                '-V', 'country:Canada',
+                '-V', 'phone:(226) 229-1337',
+                '-V', 'wordcount:{:,}'.format(wordcount),
+            ],
+            filters=[
+                # os.path.join(self.saga, 'saga/filters', 'hr_to_scene_break.py'),
+            ]
+        )
 
-            # Replace the HorizontalRule with our scene break.
-            # TODO: See if a filter will work with this.
-            rtf = rtf.replace("\\emdash\\emdash\\emdash\\emdash\\emdash", "#")
+        # Post-processing
+        print("Post-processing...")
 
-            # Write the output
-            if not os.path.exists(drafts):
-                os.mkdir(drafts)
+        # Replace the HorizontalRule with our scene break.
+        # TODO: See if a filter will work with this.
+        rtf = rtf.replace("\\emdash\\emdash\\emdash\\emdash\\emdash", "#")
 
-            print("Writing output...")
-            with open('{}/{}.rtf'.format(drafts, metadata['running-title']), 'w') as f:
-                f.write(rtf)
+        # Write the output
+        if not os.path.exists(drafts):
+            os.mkdir(drafts)
 
-            # Delete the temporary file
-            os.unlink(fp.name)
+        print("Writing output...")
+        with open('{}/{}.rtf'.format(drafts, metadata['running-title']), 'w') as f:
+            f.write(rtf)
+
+        # Delete the temporary file
+        os.unlink(fp.name)
+
+        # TODO: Convert the finished RTF to other formats
+        # for format in ['odt', 'docx', 'pdf']:
+        # pypandoc.convert_file(
+        #     '{}/{}.rtf'.format(drafts, metadata['running-title']),
+        #     'odt',
+        # )
 
         # Check the Word Count
         # Check the grammar/rules

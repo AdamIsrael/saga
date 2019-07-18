@@ -1,16 +1,6 @@
-import math
-import re
 import os
 import os.path
 
-def wordcount(s):
-    # TODO: Do a proper word count
-    if isinstance(s, list):
-        s = "\n".join(s)
-    wc = len(re.findall(r'\w+', s))
-
-    # Round to the nearest 100
-    return int(math.ceil(wc / 100.0)) * 100
 
 # def find_saga_config():
 #     """Find the saga config file."""

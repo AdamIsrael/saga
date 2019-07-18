@@ -58,8 +58,10 @@ A scene break will automatically be inserted between scenes.
 
 Compile the manuscript(s) into a single document and produce a variety of formats
 
-TBD: Write to `~drafts/<project type>/<short-title>` or `~/<type>/<short-title>/Output?`.
 
 ## TODO
 - Make font type and size customizable
-- 
+- Add separator to wordcount, i.e., 10,221
+- Better formatting of folder names (acts/chapters)
+- Replace "…" with "..."?
+- What about smart quotes?

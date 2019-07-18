@@ -1,0 +1,4 @@
+pandocfilters==1.4.2
+pypandoc==1.4
+PyYAML==5.1.1
+-e git+git@github.com:AdamIsrael/saga.git@f609e88aa5d4925fdb9959df01c6b61beb133723#egg=saga

@@ -10,10 +10,10 @@ def find_saga_config():
         return False
 
     # Walk backwards from the current directory to find the saga.yaml
-    here = os.getcwd()
+    here = os.path.dirname(os.getcwd())
 
     while here != "/":
-        print("Here is {}".format(here))
+        # print("Here is {}".format(here))
         if hasConfig(here):
             return here
 
@@ -26,3 +26,10 @@ def find_saga_config():
     #     return ""
 
     return None
+
+def find_saga_lib():
+    """Find the saga libraries."""
+
+    return os.path.dirname(
+        os.path.dirname(__file__)
+    )

@@ -47,10 +47,15 @@ def get_argparser():
     return parser
 
 def args_compile(args):
-    print("compile called")
-    print(args)
+    print("Compiling...")
+    # print(args)
 
+    print(__file__)
+    print(os.path.dirname(__file__))
     here = saga.find_saga_config()
+    # print("Saga: {}".format(here))
+    # return
+
     if here:
         print("We're in a project folder")
         # TODO: Make sure we're in a project folder, not just
@@ -84,7 +89,7 @@ def args_compile(args):
             compiler.CompileDraft(metadata=metadata)
 
 def args_init(args):
-    workspace = Workspace()
+    workspace = saga.workspace.Workspace()
 
     if args.verbose:
         print("Initializing workspace")

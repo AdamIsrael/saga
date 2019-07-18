@@ -2,6 +2,7 @@ import os
 import os.path
 import pypandoc
 from pandocfilters import walk, toJSONFilter
+import saga.utils
 import tempfile
 
 
@@ -15,9 +16,17 @@ class Compiler():
 
         # Get the current project directory
         here = os.getcwd()
+        
+        # The current draft
         draft = os.path.normpath(os.path.join(here, "Draft"))
-        output = os.path.normpath(os.path.join(here, "Output"))
 
+        # Where we store all compiled drafts
+        drafts = os.path.normpath(os.path.join(
+            saga.find_saga_config(), 
+            "Drafts"
+        ))
+        # print("Drafts: {}".format(drafts))
+        # return
         # print(draft)
 
         # Get the configuration
@@ -37,44 +46,50 @@ class Compiler():
             # Add header content
             
             last = len(files) - 1
+            buffer = ""
             for i, file in enumerate(files):
-                buffer = []
+                
 
                 # Open file
                 with open(file, 'r') as f:
                     # Read file
-                    buffer = f.readlines()
+                    lines = f.readlines()
+
+                    buffer += "".join(lines)
+                    # buffer = f.readlines()
+
+                    f.seek(0)
 
                 # Preprocessor
 
                 # Put a line after each scene
                 if i != last:
-                    buffer.append('')
-                    buffer.append("***")
-                    buffer.append('')
+                    # buffer.append('')
+                    # buffer.append("***")
+                    # buffer.append('')
+
+                    buffer += "\n***\n"
 
                 # Write to temporary file
-                fp.write("\n".join(buffer).encode('utf-8'))
+                # fp.write("\n".join(buffer).encode('utf-8'))
+                fp.write(buffer.encode('utf-8'))
 
- 
-
-            fp.seek(0)
-            print(fp.readlines())
+            # fp.seek(0)
+            # print(fp.readlines())
 
             fp.close()
             print(fp.name)
 
             # Is there a metadata.yaml?
-            print(metadata)
+            # print(metadata)
             # For each format defined in the yaml config
             rtf = pypandoc.convert_file(
                 fp.name,
                 'rtf',
                 format='md',
-                # outputfile="/tmp/somefile.rtf",
                 extra_args=[
                     # 'metadata.yaml', 
-                    '--data-dir={}/.pandoc/'.format(self.saga),
+                    '--data-dir={}/.pandoc/'.format(saga.find_saga_lib()),
                     '--template=template.rtf',
                     # Pass metadata variables here
                     '-V', 'title:{}'.format(metadata['title']),
@@ -90,7 +105,7 @@ class Compiler():
                     '-V', 'zipcode:N0P 2L0',
                     '-V', 'country:Canada',
                     '-V', 'phone:(226) 229-1337',
-                    '-V', 'wordcount:1,234',
+                    '-V', 'wordcount:{}'.format(saga.utils.wordcount(buffer)),
                 ],
                 filters=[
                     # os.path.join(self.saga, 'saga/filters', 'hr_to_scene_break.py'),
@@ -105,11 +120,11 @@ class Compiler():
             rtf = rtf.replace("\\emdash\\emdash\\emdash\\emdash\\emdash", "#")
 
             # Write the output
-            if not os.path.exists(output):
-                os.mkdir(output)
+            if not os.path.exists(drafts):
+                os.mkdir(drafts)
 
             print("Writing output...")
-            with open('{}/{}.rtf'.format(output, metadata['running-title']), 'w') as f:
+            with open('{}/{}.rtf'.format(drafts, metadata['running-title']), 'w') as f:
                 f.write(rtf)
 
             # Delete the temporary file

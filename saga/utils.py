@@ -15,7 +15,7 @@ def find_saga_config():
     here = os.getcwd()
 
     while here != "/":
-        print("Here is {}".format(here))
+        # print("Here is {}".format(here))
         if hasConfig(here):
             return here
 

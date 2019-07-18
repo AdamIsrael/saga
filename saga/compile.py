@@ -10,12 +10,14 @@ class Compiler():
         self.saga = kwargs['saga']
 
 
-    def CompileDraft(self):
+    def CompileDraft(self, metadata):
         print (self.saga)
 
         # Get the current project directory
         here = os.getcwd()
         draft = os.path.normpath(os.path.join(here, "Draft"))
+        output = os.path.normpath(os.path.join(here, "Output"))
+
         # print(draft)
 
         # Get the configuration
@@ -63,9 +65,9 @@ class Compiler():
             print(fp.name)
 
             # Is there a metadata.yaml?
-
+            print(metadata)
             # For each format defined in the yaml config
-            output = pypandoc.convert_file(
+            rtf = pypandoc.convert_file(
                 fp.name,
                 'rtf',
                 format='md',
@@ -75,8 +77,8 @@ class Compiler():
                     '--data-dir={}/.pandoc/'.format(self.saga),
                     '--template=template.rtf',
                     # Pass metadata variables here
-                    '-V', 'title:The Foo of Bar',
-                    '-V', 'running-title:Foo',
+                    '-V', 'title:{}'.format(metadata['title']),
+                    '-V', 'running-title:{}'.format(metadata['running-title']),
                     '-V', 'author:Adam Israel',
                     '-V', 'email:adam@adamisrael.com',
                     '-V', 'surname:Israel',
@@ -100,12 +102,15 @@ class Compiler():
 
             # Replace the HorizontalRule with our scene break.
             # TODO: See if a filter will work with this.
-            output = output.replace("\\emdash\\emdash\\emdash\\emdash\\emdash", "#")
+            rtf = rtf.replace("\\emdash\\emdash\\emdash\\emdash\\emdash", "#")
 
             # Write the output
+            if not os.path.exists(output):
+                os.mkdir(output)
+
             print("Writing output...")
-            with open('/tmp/somefile.rtf', 'w') as f:
-                f.write(output)
+            with open('{}/{}.rtf'.format(output, metadata['running-title']), 'w') as f:
+                f.write(rtf)
 
             # Delete the temporary file
             os.unlink(fp.name)

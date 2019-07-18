@@ -7,11 +7,9 @@ import saga.compile
 import saga.templates
 import saga.utils
 import saga.workspace
-# from saga.compile import Compile
-# from saga.workspace import Workspace
-# from saga.templates import templates
-from shutil import copytree
 
+from shutil import copytree
+import yaml
 
 def get_argparser():
     parser = argparse.ArgumentParser(description='Saga document system')
@@ -55,18 +53,35 @@ def args_compile(args):
     here = saga.find_saga_config()
     if here:
         print("We're in a project folder")
+        # TODO: Make sure we're in a project folder, not just
+        # under the initialized saga directory
 
-        compiler = saga.compile.Compiler(
-            # Tell the compiler where saga is
-            saga=here,
-        )
-        # Look for a project-specific config
+        metadata = {}
 
-        # Map in the saga defaults
+        # Load the saga defaults
+        with open("{}/saga.yaml".format(here)) as f:
+            metadata = yaml.safe_load(f)
+
+        phere = os.getcwd()
+        project = os.path.basename(phere)
+        if os.path.exists("{}/{}.yaml".format(phere, project)):
+            # Map the project-specific config
+            with open("{}/{}.yaml".format(phere, project)) as f:
+                pmeta = yaml.safe_load(f)
+                metadata = {**metadata, **pmeta}
+            # print(metadata)
+            # return
+            compiler = saga.compile.Compiler(
+                # Tell the compiler where saga is
+                saga=here,
+            )
+
+        else:
+            print("Not a valid saga project!")
 
         if args.target == 'draft':
             print("Compiling a draft...")
-            compiler.CompileDraft()
+            compiler.CompileDraft(metadata=metadata)
 
 def args_init(args):
     workspace = Workspace()

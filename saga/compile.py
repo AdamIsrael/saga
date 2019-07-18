@@ -1,6 +1,7 @@
 import os
 import os.path
 import pypandoc
+from pandocfilters import walk, toJSONFilter
 import tempfile
 
 
@@ -32,8 +33,9 @@ class Compiler():
         with tempfile.NamedTemporaryFile(delete=False, suffix='.md') as fp:
 
             # Add header content
-
-            for file in files:
+            
+            last = len(files) - 1
+            for i, file in enumerate(files):
                 buffer = []
 
                 # Open file
@@ -42,16 +44,17 @@ class Compiler():
                     buffer = f.readlines()
 
                 # Preprocessor
-                buffer.append("* * *")
-                buffer.append('')
-                print(buffer)
+
+                # Put a line after each scene
+                if i != last:
+                    buffer.append('')
+                    buffer.append("***")
+                    buffer.append('')
 
                 # Write to temporary file
                 fp.write("\n".join(buffer).encode('utf-8'))
 
-                # Write separator
-                # fp.write(b"\n***\n")
-                # 
+ 
 
             fp.seek(0)
             print(fp.readlines())
@@ -66,18 +69,43 @@ class Compiler():
                 fp.name,
                 'rtf',
                 format='md',
-                outputfile="/tmp/somefile.rtf",
+                # outputfile="/tmp/somefile.rtf",
                 extra_args=[
                     # 'metadata.yaml', 
                     '--data-dir={}/.pandoc/'.format(self.saga),
                     '--template=template.rtf',
                     # Pass metadata variables here
                     '-V', 'title:The Foo of Bar',
+                    '-V', 'running-title:Foo',
                     '-V', 'author:Adam Israel',
+                    '-V', 'email:adam@adamisrael.com',
+                    '-V', 'surname:Israel',
+                    '-V', 'fullname:Adam Israel',
+                    '-V', 'address1:17 Vanier Dr.',
+                    '-V', 'address2:P.O. Box 1946',
+                    '-V', 'city:Tilbury',
+                    '-V', 'state:ON',
+                    '-V', 'zipcode:N0P 2L0',
+                    '-V', 'country:Canada',
+                    '-V', 'phone:(226) 229-1337',
                     '-V', 'wordcount:1,234',
-
+                ],
+                filters=[
+                    # os.path.join(self.saga, 'saga/filters', 'hr_to_scene_break.py'),
                 ]
             )
+
+            # Post-processing
+            print("Post-processing...")
+
+            # Replace the HorizontalRule with our scene break.
+            # TODO: See if a filter will work with this.
+            output = output.replace("\\emdash\\emdash\\emdash\\emdash\\emdash", "#")
+
+            # Write the output
+            print("Writing output...")
+            with open('/tmp/somefile.rtf', 'w') as f:
+                f.write(output)
 
             # Delete the temporary file
             os.unlink(fp.name)

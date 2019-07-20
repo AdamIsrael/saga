@@ -30,7 +30,8 @@ def list_templates():
     :return: A list of installed templates
     """
     here = os.path.dirname(os.path.abspath(__file__))
-
+    here = os.path.join(here, "templates")
+    # print(here)
     files = [f for f in os.listdir(here) if os.path.isfile("{}/{}".format(here, f))]
     templates = []
     for file in files:

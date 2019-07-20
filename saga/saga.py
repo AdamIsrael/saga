@@ -69,16 +69,16 @@ def args_compile(args):
 
         phere = os.getcwd()
         project = os.path.basename(phere)
-        if os.path.exists("{}/{}.yaml".format(phere, project)):
+        if os.path.exists("{}/saga.yaml".format(phere)):
             # Map the project-specific config
-            with open("{}/{}.yaml".format(phere, project)) as f:
+            with open("{}/saga.yaml".format(phere)) as f:
                 pmeta = yaml.safe_load(f)
                 metadata = {**metadata, **pmeta}
             # print(metadata)
             # return
             compiler = saga.compile.Compiler(
                 # Tell the compiler where saga is
-                saga=here,
+                saga=saga.find_saga_lib(),
             )
 
         else:

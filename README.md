@@ -65,3 +65,6 @@ Compile the manuscript(s) into a single document and produce a variety of format
 - Better formatting of folder names (acts/chapters)
 - Replace "…" with "..."?
 - What about smart quotes?
+- Configuration: A list of files to ignore during compilation (i.e., 0.md)
+- Filter: Add `\sl480\slmult1` to para to double-space body
+- Filter: Add `\fi720` to para to indent the first line

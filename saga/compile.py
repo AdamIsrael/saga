@@ -59,23 +59,31 @@ class Compiler():
                 '-V', 'wordcount:{:,}'.format(wordcount),
             ],
             filters=[
+                # Format chapter headings
+                "{}/saga/filters/headers.py".format(saga.find_saga_lib()),
+
+                # Convert scene breaks
+                "{}/saga/filters/hr_to_scene_break.py".format(saga.find_saga_lib()),
+        
+                # Standard Manuscript Format, as defined by Bill Shunn:
+                # https://shunn.net/format/story.html
+                "{}/saga/filters/smf.py".format(saga.find_saga_lib()),
             ]
         )
 
         # Post-processing
         print("Post-processing...")
 
-        """
-        Standard Manuscript Format, as defined by Bill Shunn: 
-        https://shunn.net/format/story.html
-        """
-        
+
         # The paragraph spacing of the RTF writer can't be overridden with a filter, so do it in post
-        rtf = rtf.replace("\\pard \\ql \\f0 \\sa180 \\li0 \\fi0", "\\pard \\ql \\f0 \\sa180 \\li0 \\fi720 \\sl480\\slmult1")
+        # rtf = rtf.replace("\\pard \\ql \\f0 \\sa180 \\li0 \\fi0", "\\pard \\ql \\f0 \\sa180 \\li0 \\fi720 \\sl480\\slmult1")
 
         # Replace the HorizontalRule with our scene break.
-        rtf = rtf.replace("\\emdash\\emdash\\emdash\\emdash\\emdash", "#")
+        # rtf = rtf.replace("\\emdash\\emdash\\emdash\\emdash\\emdash", "#")
 
+        # Fix chapter headings
+        # '\\fi0\\li0\\pagebb\\sb4320\\sa1440\\qc
+        
         # Write the output
         if not os.path.exists(drafts):
             os.mkdir(drafts)
@@ -140,7 +148,7 @@ class Compiler():
 
         # Get a list of all the individual parts
         files = self.getFiles(path)
-
+        # print(sorted(files))
         # Open temporary file to store unified Markdown
         buffer = []
 

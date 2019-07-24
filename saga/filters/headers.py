@@ -6,9 +6,24 @@ def increase_header_level(elem, doc):
         header = stringify(elem)
 
         # TODO: Format this nicer
-        newheader = '{\\pard \\ql \\f0 \\sa180 \\li0 \\fi720 \\b ' + header + '\\par}\n'
-        
-        return(RawBlock(newheader, 'rtf'))
+        # Check elem.level to know if this is a chapter heading or not
+
+        """
+        Rules:
+
+        For chapter headings:
+        - center
+        - bold?
+        four blank lines
+        """
+        # \\ql \\f0 \\sa180 \\li0 \\fi720
+        if elem.level == 1:
+            newheader = '{\\pard \\ql \\f0 \\qc ' + header + '\\par}\n'
+            newheader += '{\\pard \\line \\line \\line \\line \\par}\n'
+
+            return(RawBlock(newheader, 'rtf'))
+        else:
+            return []
 
 def main(doc=None):
     return run_filter(increase_header_level, doc=doc)

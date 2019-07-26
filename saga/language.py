@@ -66,7 +66,9 @@ class Words():
             lens.append(len(line))
         
         # Get the average characters per line
-        avg = float(sum(lens)) / len(lens)
+        avg = 0
+        if sum(lens) > 0:
+            avg = float(sum(lens)) / len(lens)
 
         # Get the number of words per line
         wpl = avg / 6

@@ -9,8 +9,15 @@ def smf(elem, doc):
         
         # Fix smart quotes, etc.
         content = content.replace("’", "\'")
+
+        # Elipsis
         content = content.replace("…", "...")
-        content = content.replace("–", "--")
+       
+        # Fix em-dash
+        content = content.replace("–", "\emdash ")
+        content = content.replace("—", "\emdash ")
+
+
 
         # {\pard \ql \f0 \sa180 \li720 \fi0
         content = '{\pard \ql \\f0 \sa180 \li0 \\fi720 \sl480 \slmult1 ' + content + ' \\par}\n'

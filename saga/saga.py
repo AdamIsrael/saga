@@ -4,6 +4,7 @@ import os
 import os.path
 # import saga
 import saga.compile
+import saga.stats
 import saga.templates
 import saga.utils
 import saga.workspace
@@ -43,6 +44,19 @@ def get_argparser():
     )
 
     compile_p.set_defaults(func=args_compile)
+
+    # Stats
+    stats_p = subparsers.add_parser('stats')
+
+    stats_p.add_argument(
+        'target', 
+        default='words',
+        const='all',
+        nargs='?',
+        choices=['words', 'other'], 
+        help='The target to compile to'
+    )
+    stats_p.set_defaults(func=args_stats)
 
     return parser
 
@@ -133,6 +147,35 @@ def args_new(args):
             here,
         )
         print("{} created!".format(here))
+
+def args_stats(args):
+    if args.target == 'words':
+        print('words words words words punchline')
+
+        # TODO: print out word count and stats, broken down by draft, outline, and research
+
+        stats = saga.stats.Stats(
+            saga=saga.find_saga_lib(),
+        )
+
+        # Word Count by type
+        # words = stats.WordCount()
+
+        draft = stats.WordCount.Draft
+        outline = stats.WordCount.Outline
+        research = stats.WordCount.Research
+
+        # draft = words['Draft']
+        # outline = words['Outline']
+        # research = words['Research']
+
+        print("Draft: {:,} words".format(draft))
+        print("Outline: {:,} words".format(outline))
+        print("Research: {:,} words".format(research))
+
+        print("Total: {:,} words".format(draft + outline + research))
+    pass
+
 
 def main():
     parser = get_argparser()

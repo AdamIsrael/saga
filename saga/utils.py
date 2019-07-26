@@ -2,6 +2,25 @@ import os
 import os.path
 
 
+class ReadingTime():
+    def Estimate(self, wordcount, wpm=300):
+        """Estimate the average reading time.
+
+        Estimates the average reading time based on the Word count and Words per Minute.
+
+        :param wordcount int: The words to be read.
+        :param wpm int: The words per minute (based on reading difficulty)
+
+        :return int: The time, in minutes, to read the work.
+
+        Example:
+
+        s = ReadingTime.Estimate(100000, 300)
+        """
+
+        return int(round(wordcount / wpm, 0))
+
+
 # def find_saga_config():
 #     """Find the saga config file."""
 

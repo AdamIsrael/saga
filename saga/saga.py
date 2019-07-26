@@ -150,8 +150,6 @@ def args_new(args):
 
 def args_stats(args):
     if args.target == 'words':
-        print('words words words words punchline')
-
         # TODO: print out word count and stats, broken down by draft, outline, and research
 
         stats = saga.stats.Stats(
@@ -159,20 +157,15 @@ def args_stats(args):
         )
 
         # Word Count by type
-        # words = stats.WordCount()
-
         draft = stats.WordCount.Draft
         outline = stats.WordCount.Outline
         research = stats.WordCount.Research
+        rt = saga.utils.ReadingTime()
 
-        # draft = words['Draft']
-        # outline = words['Outline']
-        # research = words['Research']
-
-        print("Draft: {:,} words".format(draft))
-        print("Outline: {:,} words".format(outline))
-        print("Research: {:,} words".format(research))
-
+        print("Draft: {:,} words ({} minutes)".format(draft, rt.Estimate(draft)))
+        print("Outline: {:,} words ({} minutes)".format(outline, rt.Estimate(outline)))
+        print("Research: {:,} words ({} minutes)".format(research, rt.Estimate(research)))
+        print("=====")
         print("Total: {:,} words".format(draft + outline + research))
     pass
 

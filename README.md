@@ -14,8 +14,23 @@ The input format is always Markdown. Saga uses _pandoc_ to transform this into *
 The `saga` command has a number of targets:
 - new [novel, short, script, etc]
 - compile [draft, outline, research]
-- wc (word count)
+- stats (word count)
 - grammar (run some kind of grammar/spellcheck tool?)
+
+### Stats
+
+Word count by Draft, Outline, and Research. Done.
+
+Word frequency
+
+Longest word
+
+Reading time:
+
+    If the average page has 250–300 words, then the word count for a 100-page book totals 25,000–30,000. By reading 300 words per minute, it will take you 83–100 minutes to read this book. -- Dr. Google
+
+We should be able to determine the average reading level of the book. Somehow. That will give us the words per minute. We can then calculate, based on the draft length, the average reading time.
+
 
 ## New Project
 
@@ -61,10 +76,5 @@ Compile the manuscript(s) into a single document and produce a variety of format
 
 ## TODO
 - Make font type and size customizable
-- Add separator to wordcount, i.e., 10,221
 - Better formatting of folder names (acts/chapters)
-- Replace "…" with "..."?
-- What about smart quotes?
 - Configuration: A list of files to ignore during compilation (i.e., 0.md)
-- Filter: Add `\sl480\slmult1` to para to double-space body
-- Filter: Add `\fi720` to para to indent the first line
